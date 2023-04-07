@@ -5,9 +5,11 @@ channels:
 
 dependencies:
   - pip
+  - ipykernel
   - scipy
   - numpy
   - pandas
+  - matplotlib
   - pip: 
     - jpype1
     - pynetlogo

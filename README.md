@@ -5,13 +5,14 @@
   
 To create your environment: 
 ```
-conda env create --prefix ./env --file environment.yml
-conda activate ./env
+conda env create --file environment.yml
+conda activate dmib-project-env
 ```
 
 To rebuild your environment:  
 ```
-conda env create --prefix ./env --file environment.yml --force
+conda env create --file environment.yml --force
+conda activate dmib-project-env
 ```
 
 ## Project proposal 
