@@ -1,4 +1,19 @@
 # Myoblast Self-Assembly And Validation
+
+## Code (in this repo)
+- Create your `conda` environment or install SciPy, NumPy, Pandas, JPype, and Pynetlogo 
+  
+To create your environment: 
+```
+conda env create --prefix ./env --file environment.yml
+conda activate ./env
+```
+
+To rebuild your environment:  
+```
+conda env create --prefix ./env --file environment.yml --force
+```
+
 ## Project proposal 
 - [Link](https://www.overleaf.com/read/mstjpjmwcxzd)
 - Status: Complete
@@ -9,7 +24,7 @@
 TODO: 
 - [ ] Draft presentation
 
-## Code (in this repo)
+
 
 ## Final Paper
 - [Link](https://www.overleaf.com/read/kskczhwsqhvy)

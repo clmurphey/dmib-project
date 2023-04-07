@@ -1,0 +1,13 @@
+name: dmib-project-env
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - pip
+  - scipy
+  - numpy
+  - pandas
+  - pip: 
+    - jpype1
+    - pynetlogo
