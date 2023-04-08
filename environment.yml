@@ -11,5 +11,4 @@ dependencies:
   - pandas
   - matplotlib
   - pip: 
-    - jpype1
-    - pynetlogo
+    - mesa
