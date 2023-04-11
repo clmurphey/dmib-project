@@ -21,10 +21,14 @@ to go
   if ticks >= 500 [ stop ]
   move-cells
   merge-cells
-  ;;OLD: not ready to say goodbye
-  ;;ask cells [ask neighbors [ask cells-here [set ready-to-merge? true]]]
-  ;;ask cells with [ready-to-merge?] [merge-cells]
+  align-cells
   tick
+end
+
+to align-cells
+  ask cells with [leader != self] [
+    set heading towards leader
+  ]
 end
 
 to merge-cells
