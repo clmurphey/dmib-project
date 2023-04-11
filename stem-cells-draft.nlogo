@@ -1,10 +1,11 @@
 ;create cells and tubes
 breed [cells cell]
-breed [myotubes myotube]
 
 ;declare variables
-myotubes-own [num-cells]
-cells-own [ready-to-merge?]
+cells-own [
+  leader ;each myotube has a leader so the tub moves cohesively
+  turn-amount
+]
 
 to setup
   clear-all
@@ -19,9 +20,32 @@ end
 to go
   if ticks >= 500 [ stop ]
   move-cells
-  ask cells [ask neighbors [ask cells-here [set ready-to-merge? true]]]
-  ask cells with [ready-to-merge?] [set color green]
+  merge-cells
+  ;;OLD: not ready to say goodbye
+  ;;ask cells [ask neighbors [ask cells-here [set ready-to-merge? true]]]
+  ;;ask cells with [ready-to-merge?] [merge-cells]
   tick
+end
+
+to merge-cells
+  ask cells [
+    ;look for candidate cells to merge with
+    let candidates cells in-radius 1 with [leader != [leader] of myself]
+    if any? candidates [
+      create-links-with candidates [hide-link]
+      ask candidates [merge]
+    ]
+  ]
+end
+
+to merge
+  ;recursively merge cells so they all share one leader
+  set leader [leader] of myself
+  set heading [heading] of leader
+  set color blue
+  ask link-neighbors with [leader != [leader] of myself] [
+    merge
+  ]
 end
 
 to setup-cells
@@ -30,15 +54,19 @@ to setup-cells
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
     set shape "circle"
-    set ready-to-merge? false
+    set leader self
   ]
 end
 
 to move-cells
   ;TODO: move from periodic BC to a wall
-  ask turtles [
-    right random 360
-    forward 1
+  ;leaders choose their turn amount
+  ask cells with [leader = self] [
+    set turn-amount random 10 ;NOTE: changed this to 10 for smoother behavior
+  ]
+  ask cells [
+    rt [turn-amount] of leader
+    forward 0.1
   ]
 end
 
@@ -133,17 +161,6 @@ count cells
 1
 11
 
-MONITOR
-179
-34
-273
-79
-myotubes
-count myotubes
-17
-1
-11
-
 SWITCH
 0
 221
@@ -164,7 +181,7 @@ number
 number
 100
 500
-200.0
+300.0
 100
 1
 NIL
