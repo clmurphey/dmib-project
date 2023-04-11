@@ -76,7 +76,7 @@ to move-cells
   ;TODO: currently the cells move in lazy little circles, make this less noticeable
   ;leaders choose their turn amount
   ask cells with [leader = self] [
-    set turn-amount random 10 ;NOTE: changed this to 10 for smoother behavior
+    set turn-amount -10 + random 10 ;NOTE: changed this to 10 for smoother behavior
     set step-size 0.25
     set follower-step-size 0.5
   ]
