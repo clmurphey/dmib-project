@@ -4,10 +4,10 @@ breed [myotubes myotube]
 
 ;declare variables
 myotubes-own [num-cells]
+cells-own [ready-to-merge?]
 
 to setup
   clear-all
-  setup-patches
   setup-cells
   reset-ticks
 end
@@ -19,31 +19,9 @@ end
 to go
   if ticks >= 500 [ stop ]
   move-cells
-  merge-cells
+  ask cells [ask neighbors [ask cells-here [set ready-to-merge? true]]]
+  ask cells with [ready-to-merge?] [set color green]
   tick
-end
-
-;for merging two cells
-to merge-cells
-  ask cells [
-    ask other cells in-radius (size / 2) [die]
-  ]
-  ;ask other cells in-radius (size / 2) [die]
-  ;TODO: have the cell that didn't die turn into a myotube of length = # of dead cells
-end
-
-;for merging a tube with one cell
-to merge-tube-and-cell
-  ask myotubes [
-    set num-cells num-cells + 1
-    ifelse show-length?
-    [set label num-cells] ;true
-    [set label ""] ;false
-  ]
-end
-
-to setup-patches
-  ask patches [ set pcolor green ]
 end
 
 to setup-cells
@@ -52,6 +30,7 @@ to setup-cells
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
     set shape "circle"
+    set ready-to-merge? false
   ]
 end
 
