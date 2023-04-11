@@ -3,7 +3,7 @@ breed [cells cell]
 
 ;declare variables
 cells-own [
-  leader ;each myotube has a leader so the tub moves cohesively
+  leader ;each cell has a leader so the cells move cohesively
   turn-amount
 ]
 
@@ -45,7 +45,7 @@ end
 to merge
   ;recursively merge cells so they all share one leader
   set leader [leader] of myself
-  set heading [heading] of leader
+  set heading [heading] of leader + random 10 ;randomness to achive a more natural behavior
   set color blue
   ask link-neighbors with [leader != [leader] of myself] [
     merge
@@ -64,15 +64,33 @@ end
 
 to move-cells
   ;TODO: move from periodic BC to a wall
+  ;TODO: currently the cells move in lazy little circles, make this less noticeable
   ;leaders choose their turn amount
   ask cells with [leader = self] [
     set turn-amount random 10 ;NOTE: changed this to 10 for smoother behavior
   ]
+
   ask cells [
-    rt [turn-amount] of leader
-    forward 0.1
+    ;check if there are any overlapping cells
+    let colliding? any? link-neighbors with [distance myself <= 0.05]
+
+    ;if cells are not colliding, they can move normally
+    ;leaders always move. TODO: this means that the leader will "lose" its followers.
+    ifelse not colliding? or leader = self
+    [
+      rt [turn-amount] of leader + random-float 5 ;add some randomness for ~zest~
+      forward 0.1
+    ]
+    [
+      rt [turn-amount] of leader + random-float 10
+      forward 0.05
+    ]
+
+    ;TODO: cells that are colliding freeze and never move
   ]
 end
+
+
 
 
 @#$#@#$#@
@@ -164,17 +182,6 @@ count cells
 17
 1
 11
-
-SWITCH
-0
-221
-127
-254
-show-length?
-show-length?
-0
-1
--1000
 
 SLIDER
 92
