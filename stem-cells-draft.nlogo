@@ -5,6 +5,12 @@ breed [cells cell]
 cells-own [
   leader ;each cell has a leader so the cells move cohesively
   turn-amount
+  is-leader?
+  followers
+]
+
+globals [
+  cell-count
 ]
 
 to setup
@@ -20,7 +26,11 @@ end
 to go
   if ticks >= 500 [ stop ]
   move-cells
+  let old-blue-cells count cells with [color = blue]
   merge-cells
+  let new-blue-cells count cells with [color = blue]
+  let difference new-blue-cells - old-blue-cells
+  set cell-count cell-count - difference
   align-cells
   tick
 end
@@ -34,7 +44,7 @@ end
 to merge-cells
   ask cells [
     ;look for candidate cells to merge with
-    let candidates cells in-radius 1 with [leader != [leader] of myself]
+    let candidates (cells-on neighbors4) with [leader != [leader] of myself]
     if any? candidates [
       create-links-with candidates [hide-link]
       ask candidates [merge]
@@ -54,10 +64,11 @@ end
 
 to setup-cells
   create-cells number
+  set cell-count number
   ask cells [
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
-    set shape "circle"
+    set shape "dot"
     set leader self
   ]
 end
@@ -67,30 +78,28 @@ to move-cells
   ;TODO: currently the cells move in lazy little circles, make this less noticeable
   ;leaders choose their turn amount
   ask cells with [leader = self] [
-    set turn-amount random 10 ;NOTE: changed this to 10 for smoother behavior
+    set turn-amount -10 + random 10 ;NOTE: changed this to 10 for smoother behavior
   ]
 
   ask cells [
     ;check if there are any overlapping cells
-    let colliding? any? link-neighbors with [distance myself <= 0.05]
+    let colliding? any? link-neighbors with [distance myself <= 0.5]
 
     ;if cells are not colliding, they can move normally
     ;leaders always move. TODO: this means that the leader will "lose" its followers.
     ifelse not colliding? or leader = self
     [
-      rt [turn-amount] of leader + random-float 5 ;add some randomness for ~zest~
-      forward 0.1
+      rt [turn-amount] of leader
+      forward 0.21
     ]
     [
-      rt [turn-amount] of leader + random-float 10
-      forward 0.05
+      ;heading is determined by direction of the leader
+      forward 0.2
     ]
 
     ;TODO: cells that are colliding freeze and never move
   ]
 end
-
-
 
 
 @#$#@#$#@
@@ -190,13 +199,31 @@ SLIDER
 130
 number
 number
-100
 500
-300.0
+1000
+500.0
 100
 1
 NIL
 HORIZONTAL
+
+PLOT
+19
+196
+219
+346
+cell count
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot cell-count"
 
 @#$#@#$#@
 ## WHAT IS IT?
