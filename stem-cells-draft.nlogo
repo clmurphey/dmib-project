@@ -5,16 +5,16 @@ breed [cells cell]
 cells-own [
   leader ;each cell has a leader so the cells move cohesively
   turn-amount
-  is-leader?
-  followers
 ]
 
 globals [
   cell-count
+  step-size
 ]
 
 to setup
   clear-all
+  set step-size 0.2
   setup-cells
   reset-ticks
 end
@@ -75,11 +75,11 @@ end
 
 to move-cells
   ;TODO: move from periodic BC to a wall
-  ;TODO: currently the cells move in lazy little circles, make this less noticeable
   ;leaders choose their turn amount
   ask cells with [leader = self] [
-    set turn-amount -10 + random 10 ;NOTE: changed this to 10 for smoother behavior
+    set turn-amount random 20 - random 30
   ]
+
 
   ask cells [
     ;check if there are any overlapping cells
@@ -90,18 +90,21 @@ to move-cells
     ifelse not colliding? or leader = self
     [
       rt [turn-amount] of leader
-      forward 0.21
+      set xcor [xcor] of leader + (step-size * dx)
+      set ycor [ycor] of leader + (step-size * dy)
+      ;forward 0.8
     ]
     [
       ;heading is determined by direction of the leader
-      forward 0.2
+      rt [turn-amount] of leader
+      set xcor [xcor] of leader + (step-size * dx)
+      set ycor [ycor] of leader + (step-size * dy)
+      ;forward 0.79
     ]
 
     ;TODO: cells that are colliding freeze and never move
   ]
 end
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 292
@@ -187,7 +190,7 @@ MONITOR
 172
 80
 NIL
-count cells
+cell-count
 17
 1
 11
@@ -199,9 +202,9 @@ SLIDER
 130
 number
 number
-500
-1000
-500.0
+300
+700
+400.0
 100
 1
 NIL
