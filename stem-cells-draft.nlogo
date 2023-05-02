@@ -96,10 +96,12 @@ to move-cells
     ]
     [
       ;heading is determined by direction of the leader
-      rt [turn-amount] of leader
-      set xcor [xcor] of leader + (step-size * dx)
-      set ycor [ycor] of leader + (step-size * dy)
-      ;forward 0.79
+      ;rt [turn-amount] of leader
+      ;take a random proportion of the leader's step
+      let random-step step-size * random-float 1
+      ;set xcor [xcor] of leader + (random-step * dx)
+      ;set ycor [ycor] of leader + (random-step * dy)
+      forward random-step
     ]
 
     ;TODO: cells that are colliding freeze and never move
