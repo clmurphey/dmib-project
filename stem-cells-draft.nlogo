@@ -77,7 +77,15 @@ to move-cells
   ;TODO: move from periodic BC to a wall
   ;leaders choose their turn amount
   ask cells with [leader = self] [
-    set turn-amount random 20 - random 30
+    ;get either a 0 or 1 to determine if they turn left or right
+    let rand-num random 2
+    ifelse rand-num = 0
+    [
+      set turn-amount random 25
+    ]
+    [
+      set turn-amount random -25
+    ]
   ]
 
 
@@ -86,21 +94,16 @@ to move-cells
     let colliding? any? link-neighbors with [distance myself <= 0.5]
 
     ;if cells are not colliding, they can move normally
-    ;leaders always move. TODO: this means that the leader will "lose" its followers.
     ifelse not colliding? or leader = self
     [
       rt [turn-amount] of leader
       set xcor [xcor] of leader + (step-size * dx)
       set ycor [ycor] of leader + (step-size * dy)
-      ;forward 0.8
     ]
     [
       ;heading is determined by direction of the leader
-      ;rt [turn-amount] of leader
       ;take a random proportion of the leader's step
       let random-step step-size * random-float 1
-      ;set xcor [xcor] of leader + (random-step * dx)
-      ;set ycor [ycor] of leader + (random-step * dy)
       forward random-step
     ]
 
@@ -205,8 +208,8 @@ SLIDER
 number
 number
 300
-700
-700.0
+1000
+500.0
 100
 1
 NIL
