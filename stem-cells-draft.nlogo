@@ -206,7 +206,7 @@ number
 number
 300
 700
-400.0
+700.0
 100
 1
 NIL
@@ -233,23 +233,23 @@ PENS
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This is a model of myoblasts as they aggregate into myotubes. 
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+The cells move randomly around the arena, fusing together if they are within a specified radius of each other. Once fused, the cells pick a "leader" cell, which determines the direction of movement for the group of cells. 
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Set the number of individual cells using the "number" slider. The cell-count window whows the current number of cells present in the simulation. The cell count plot shows how this number changes with time.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Notice how the intial setup (number of myotubes, etc.) affect the final arrangement of mytoubes. Is there a relationship between the initial number of myoblasts and the final count of myotubes?
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Try varying the number of initial myoblasts within the simulartion. 
 
 ## EXTENDING THE MODEL
 
@@ -257,7 +257,7 @@ PENS
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+We use recursion to simulate the fusing of mytoblasts into a single tube, since this fusion is not inherently supported by Netlogo.
 
 ## RELATED MODELS
 
