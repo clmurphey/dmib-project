@@ -5,10 +5,13 @@ breed [cells cell]
 cells-own [
   leader ;each cell has a leader so the cells move cohesively
   turn-amount
+  follower-count ;for counting myotube length
 ]
 
 globals [
   cell-count
+  tube-len ;for computing average tube len
+  tube-len-avg
   step-size
 ]
 
@@ -25,14 +28,29 @@ end
 
 to go
   if ticks >= 500 [ stop ]
+  ;move the cells
   move-cells
+  ;count the number of cells before merge
   let old-blue-cells count cells with [color = blue]
   merge-cells
+  ;count the cells after merge and report
   let new-blue-cells count cells with [color = blue]
   let difference new-blue-cells - old-blue-cells
   set cell-count cell-count - difference
+  ;line the cells up
   align-cells
+  ;compute the length of myotubes
+  count-tube-len
   tick
+end
+
+to count-tube-len
+  ask cells with [color = red]
+  [
+    set follower-count count cells with [leader = self]
+  ]
+  set tube-len sum [follower-count] of cells with [color = red]
+  set tube-len-avg tube-len / cell-count
 end
 
 to align-cells
@@ -86,6 +104,7 @@ to move-cells
     [
       set turn-amount random -25
     ]
+
   ]
 
 
@@ -106,8 +125,6 @@ to move-cells
       let random-step step-size * random-float 1
       forward random-step
     ]
-
-    ;TODO: cells that are colliding freeze and never move
   ]
 end
 @#$#@#$#@
@@ -201,15 +218,15 @@ cell-count
 11
 
 SLIDER
-92
-97
-264
-130
+98
+143
+270
+176
 number
 number
-300
-1000
-500.0
+700
+2000
+1000.0
 100
 1
 NIL
@@ -232,6 +249,17 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot cell-count"
+
+MONITOR
+84
+83
+238
+128
+Average myotube length
+tube-len
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
