@@ -9,6 +9,7 @@ cells-own [
 ]
 
 globals [
+  initial-cell-count
   cell-count
   tube-len ;for computing average tube len
   tube-len-avg
@@ -37,10 +38,11 @@ to go
   let new-blue-cells count cells with [color = blue]
   let difference new-blue-cells - old-blue-cells
   set cell-count cell-count - difference
+  set tube-len-avg (initial-cell-count / cell-count)
   ;line the cells up
   align-cells
   ;compute the length of myotubes
-  count-tube-len
+  ;count-tube-len
   tick
 end
 
@@ -83,6 +85,7 @@ end
 to setup-cells
   create-cells number
   set cell-count number
+  set initial-cell-count number
   ask cells [
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
@@ -256,10 +259,28 @@ MONITOR
 238
 128
 Average myotube length
-tube-len
+tube-len-avg
 17
 1
 11
+
+PLOT
+23
+367
+223
+517
+Average Tube Length
+Time
+Average Tube Length
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"pen-0" 1.0 0 -7500403 true "" "plot tube-len-avg"
 
 @#$#@#$#@
 ## WHAT IS IT?
