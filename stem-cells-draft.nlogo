@@ -5,16 +5,20 @@ breed [cells cell]
 cells-own [
   leader ;each cell has a leader so the cells move cohesively
   turn-amount
-  step-size
-  follower-step-size
+  follower-count ;for counting myotube length
 ]
 
 globals [
-  cell-count ;; add cell count
+  initial-cell-count
+  cell-count
+  tube-len ;for computing average tube len
+  tube-len-avg
+  step-size
 ]
 
 to setup
   clear-all
+  set step-size 0.2
   setup-cells
   reset-ticks
 end
@@ -25,10 +29,30 @@ end
 
 to go
   if ticks >= 500 [ stop ]
+  ;move the cells
   move-cells
+  ;count the number of cells before merge
+  let old-blue-cells count cells with [color = blue]
   merge-cells
+  ;count the cells after merge and report
+  let new-blue-cells count cells with [color = blue]
+  let difference new-blue-cells - old-blue-cells
+  set cell-count cell-count - difference
+  set tube-len-avg (initial-cell-count / cell-count)
+  ;line the cells up
   align-cells
+  ;compute the length of myotubes
+  ;count-tube-len
   tick
+end
+
+to count-tube-len
+  ask cells with [color = red]
+  [
+    set follower-count count cells with [leader = self]
+  ]
+  set tube-len sum [follower-count] of cells with [color = red]
+  set tube-len-avg tube-len / cell-count
 end
 
 to align-cells
@@ -40,7 +64,7 @@ end
 to merge-cells
   ask cells [
     ;look for candidate cells to merge with
-    let candidates cells in-radius 1 with [leader != [leader] of myself]
+    let candidates (cells-on neighbors4) with [leader != [leader] of myself]
     if any? candidates [
       create-links-with candidates [hide-link]
       ask candidates [merge]
@@ -55,49 +79,55 @@ to merge
   set color blue
   ask link-neighbors with [leader != [leader] of myself] [
     merge
-  set cell-count cell-count - 1 ;; update cell count as cells merge
-  ;; TODO cell-count goes negative right now
   ]
 end
 
 to setup-cells
   create-cells number
-  set cell-count number ;; initialize cell count
+  set cell-count number
+  set initial-cell-count number
   ask cells [
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
-    set shape "circle"
+    set shape "dot"
     set leader self
   ]
 end
 
 to move-cells
   ;TODO: move from periodic BC to a wall
-  ;TODO: currently the cells move in lazy little circles, make this less noticeable
   ;leaders choose their turn amount
   ask cells with [leader = self] [
-    set turn-amount -10 + random 10 ;NOTE: changed this to 10 for smoother behavior
-    set step-size 0.25
-    set follower-step-size 0.5
+    ;get either a 0 or 1 to determine if they turn left or right
+    let rand-num random 2
+    ifelse rand-num = 0
+    [
+      set turn-amount random 25
+    ]
+    [
+      set turn-amount random -25
+    ]
+
   ]
+
 
   ask cells [
     ;check if there are any overlapping cells
-    let colliding? any? link-neighbors with [distance myself <= 0.05]
+    let colliding? any? link-neighbors with [distance myself <= 0.5]
 
     ;if cells are not colliding, they can move normally
-    ;leaders always move. TODO: this means that the leader will "lose" its followers.
     ifelse not colliding? or leader = self
     [
-      rt [turn-amount] of leader + random-float 5 ;add some randomness for ~zest~
-      forward step-size
+      rt [turn-amount] of leader
+      set xcor [xcor] of leader + (step-size * dx)
+      set ycor [ycor] of leader + (step-size * dy)
     ]
     [
-      rt [turn-amount] of leader + random-float 10
-      forward follower-step-size
+      ;heading is determined by direction of the leader
+      ;take a random proportion of the leader's step
+      let random-step step-size * random-float 1
+      forward random-step
     ]
-
-    ;TODO: cells that are colliding freeze and never move
   ]
 end
 @#$#@#$#@
@@ -185,34 +215,34 @@ MONITOR
 172
 80
 NIL
-count cells
+cell-count
 17
 1
 11
 
 SLIDER
-92
-97
-264
-130
+98
+143
+270
+176
 number
 number
-100
-500
-300.0
+700
+2000
+1000.0
 100
 1
 NIL
 HORIZONTAL
 
 PLOT
-62
-247
-262
-397
-Cell Count
-time
-Cell Count
+19
+196
+219
+346
+cell count
+NIL
+NIL
 0.0
 10.0
 0.0
@@ -224,36 +254,54 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot cell-count"
 
 MONITOR
-118
-178
-195
-223
-NIL
-cell-count
+84
+83
+238
+128
+Average myotube length
+tube-len-avg
 17
 1
 11
 
+PLOT
+23
+367
+223
+517
+Average Tube Length
+Time
+Average Tube Length
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"pen-0" 1.0 0 -7500403 true "" "plot tube-len-avg"
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This is a model of myoblasts as they aggregate into myotubes. 
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+The cells move randomly around the arena, fusing together if they are within a specified radius of each other. Once fused, the cells pick a "leader" cell, which determines the direction of movement for the group of cells. 
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Set the number of individual cells using the "number" slider. The cell-count window whows the current number of cells present in the simulation. The cell count plot shows how this number changes with time.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Notice how the intial setup (number of myotubes, etc.) affect the final arrangement of mytoubes. Is there a relationship between the initial number of myoblasts and the final count of myotubes?
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Try varying the number of initial myoblasts within the simulartion. 
 
 ## EXTENDING THE MODEL
 
@@ -261,7 +309,7 @@ cell-count
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+We use recursion to simulate the fusing of mytoblasts into a single tube, since this fusion is not inherently supported by Netlogo.
 
 ## RELATED MODELS
 
