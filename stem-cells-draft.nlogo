@@ -20,6 +20,7 @@ to setup
   clear-all
   set step-size 0.2
   setup-cells
+  set initial-cell-count number
   reset-ticks
 end
 
@@ -41,18 +42,7 @@ to go
   set tube-len-avg (initial-cell-count / cell-count)
   ;line the cells up
   align-cells
-  ;compute the length of myotubes
-  ;count-tube-len
   tick
-end
-
-to count-tube-len
-  ask cells with [color = red]
-  [
-    set follower-count count cells with [leader = self]
-  ]
-  set tube-len sum [follower-count] of cells with [color = red]
-  set tube-len-avg tube-len / cell-count
 end
 
 to align-cells
@@ -85,7 +75,6 @@ end
 to setup-cells
   create-cells number
   set cell-count number
-  set initial-cell-count number
   ask cells [
     setxy random-xcor random-ycor ;randomly disperse agents
     set color red
@@ -132,9 +121,9 @@ to move-cells
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-292
+308
 10
-729
+745
 448
 -1
 -1
@@ -160,9 +149,9 @@ ticks
 
 BUTTON
 0
-42
+10
 63
-75
+43
 NIL
 setup
 NIL
@@ -177,9 +166,9 @@ NIL
 
 BUTTON
 0
-86
+54
 63
-119
+87
 NIL
 clear
 NIL
@@ -194,9 +183,9 @@ NIL
 
 BUTTON
 0
-133
+101
 63
-166
+134
 NIL
 go
 T
@@ -210,10 +199,10 @@ NIL
 0
 
 MONITOR
-87
-35
-172
-80
+101
+61
+186
+106
 NIL
 cell-count
 17
@@ -221,10 +210,10 @@ cell-count
 11
 
 SLIDER
-98
-143
-270
-176
+103
+10
+275
+43
 number
 number
 700
@@ -236,10 +225,10 @@ NIL
 HORIZONTAL
 
 PLOT
-19
-196
-219
-346
+16
+164
+216
+314
 cell count
 NIL
 NIL
@@ -254,10 +243,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot cell-count"
 
 MONITOR
-84
-83
-238
-128
+102
+109
+256
+154
 Average myotube length
 tube-len-avg
 17
@@ -265,13 +254,13 @@ tube-len-avg
 11
 
 PLOT
-23
-367
-223
-517
-Average Tube Length
-Time
-Average Tube Length
+17
+317
+217
+467
+average myotube length
+NIL
+NIL
 0.0
 10.0
 0.0
@@ -280,7 +269,7 @@ true
 false
 "" ""
 PENS
-"pen-0" 1.0 0 -7500403 true "" "plot tube-len-avg"
+"default" 1.0 0 -16777216 true "" "plot tube-len-avg"
 
 @#$#@#$#@
 ## WHAT IS IT?
