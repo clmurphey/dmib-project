@@ -29,7 +29,7 @@ to clear
 end
 
 to go
-  if ticks >= 500 [ stop ]
+  if cell-count <= 1 [ stop ]
   ;move the cells
   move-cells
   ;count the number of cells before merge
@@ -218,7 +218,7 @@ number
 number
 700
 2000
-1000.0
+700.0
 100
 1
 NIL
